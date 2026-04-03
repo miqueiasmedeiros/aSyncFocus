@@ -18,7 +18,16 @@ interface CommentResponse {
   createdAt: string;
 }
 
-function mapComment(comment: any): CommentResponse {
+interface CommentWithRelations {
+  id: number;
+  postId: number;
+  userId: number;
+  comment: string;
+  createdAt: Date;
+  user: { name: string; avatarUrl: string | null };
+}
+
+function mapComment(comment: CommentWithRelations): CommentResponse {
   return {
     id: comment.id,
     postId: comment.postId,

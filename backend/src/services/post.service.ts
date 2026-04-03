@@ -10,6 +10,24 @@ import {
 import { countCommentsByPostIds } from '../repositories/comment.repository.js';
 import { listReactionsByPostIds, getUserReactionsByPostIds } from '../repositories/reaction.repository.js';
 
+type PostCounts = { comments: number; like: number; love: number; wow: number; haha: number };
+
+function zeroCounts(): PostCounts {
+  return { comments: 0, like: 0, love: 0, wow: 0, haha: 0 };
+}
+
+interface PostWithRelations {
+  id: number;
+  userId: number;
+  subject: string;
+  content: string;
+  imageUrl: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  user: { name: string; avatarUrl: string | null };
+  topics: { topic: string }[];
+}
+
 interface PostResponse {
   id: number;
   userId: number;
@@ -30,8 +48,8 @@ interface PostResponse {
 }
 
 function mapPost(
-  post: any,
-  counts: { comments: number; like: number; love: number; wow: number; haha: number },
+  post: PostWithRelations,
+  counts: PostCounts,
   userReactions: string[] = []
 ): PostResponse {
   return {
@@ -41,7 +59,7 @@ function mapPost(
     authorAvatarUrl: post.user.avatarUrl ?? null,
     subject: post.subject,
     content: post.content,
-    topics: post.topics.map((topic: any) => topic.topic),
+    topics: post.topics.map((t) => t.topic),
     imageUrl: post.imageUrl ?? null,
     createdAt: post.createdAt.toISOString(),
     updatedAt: post.updatedAt.toISOString(),
@@ -56,7 +74,7 @@ function mapPost(
 
 async function buildCounts(postIds: number[]) {
   if (postIds.length === 0) {
-    return new Map<number, { comments: number; like: number; love: number; wow: number; haha: number }>();
+    return new Map<number, PostCounts>();
   }
 
   const [commentCounts, reactionCounts] = await Promise.all([
@@ -64,20 +82,20 @@ async function buildCounts(postIds: number[]) {
     listReactionsByPostIds(postIds)
   ]);
 
-  const map = new Map<number, { comments: number; like: number; love: number; wow: number; haha: number }>();
+  const map = new Map<number, PostCounts>();
 
   postIds.forEach((id) => {
-    map.set(id, { comments: 0, like: 0, love: 0, wow: 0, haha: 0 });
+    map.set(id, zeroCounts());
   });
 
   commentCounts.forEach((entry) => {
-    const current = map.get(entry.postId) ?? { comments: 0, like: 0, love: 0, wow: 0, haha: 0 };
+    const current = map.get(entry.postId) ?? zeroCounts();
     current.comments = entry._count._all;
     map.set(entry.postId, current);
   });
 
   reactionCounts.forEach((entry) => {
-    const current = map.get(entry.postId) ?? { comments: 0, like: 0, love: 0, wow: 0, haha: 0 };
+    const current = map.get(entry.postId) ?? zeroCounts();
     if (entry.type === ReactionType.LIKE) {
       current.like = entry._count._all;
     }
@@ -115,7 +133,7 @@ export async function listAllPosts(userId?: number): Promise<PostResponse[]> {
   return posts.map((post) =>
     mapPost(
       post,
-      counts.get(post.id) ?? { comments: 0, like: 0, love: 0, wow: 0, haha: 0 },
+      counts.get(post.id) ?? zeroCounts(),
       userReactionsMap.get(post.id) ?? []
     )
   );
@@ -133,7 +151,7 @@ export async function createNewPost(
     imageUrl: payload.imageUrl ?? null
   });
 
-  return mapPost(post, { comments: 0, like: 0, love: 0, wow: 0, haha: 0 });
+  return mapPost(post, zeroCounts());
 }
 
 export async function updateExistingPost(
@@ -151,7 +169,7 @@ export async function updateExistingPost(
 
   const post = await updatePost(postId, payload);
   const counts = await buildCounts([postId]);
-  return mapPost(post, counts.get(postId) ?? { comments: 0, like: 0, love: 0, wow: 0, haha: 0 });
+  return mapPost(post, counts.get(postId) ?? zeroCounts());
 }
 
 export async function deleteExistingPost(userId: number, postId: number) {
@@ -179,5 +197,5 @@ export async function getPostById(postId: number, userId?: number): Promise<Post
   ]);
 
   const userReactions = userReactionsRaw.map((r) => r.type);
-  return mapPost(post, counts.get(postId) ?? { comments: 0, like: 0, love: 0, wow: 0, haha: 0 }, userReactions);
+  return mapPost(post, counts.get(postId) ?? zeroCounts(), userReactions);
 }

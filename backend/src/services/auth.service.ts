@@ -12,9 +12,14 @@ import {
 import { sendVerificationEmail } from '../mail/mailer.js';
 
 const TOKEN_EXPIRY_HOURS = 24;
+const HOUR_IN_MS = 3_600_000;
 
 function generateToken(): string {
   return crypto.randomBytes(32).toString('hex');
+}
+
+function tokenExpiryDate(): Date {
+  return new Date(Date.now() + TOKEN_EXPIRY_HOURS * HOUR_IN_MS);
 }
 
 export async function registerUser(payload: { name: string; email: string; password: string }) {
@@ -31,7 +36,7 @@ export async function registerUser(payload: { name: string; email: string; passw
   });
 
   const token = generateToken();
-  const expirationDate = new Date(Date.now() + TOKEN_EXPIRY_HOURS * 3600 * 1000);
+  const expirationDate = tokenExpiryDate();
   await createVerificationToken(user.id, token, expirationDate);
   await sendVerificationEmail(user.email, token);
 
@@ -84,7 +89,7 @@ export async function resendVerification(email: string) {
 
   await deleteTokensForUser(user.id);
   const token = generateToken();
-  const expirationDate = new Date(Date.now() + TOKEN_EXPIRY_HOURS * 3600 * 1000);
+  const expirationDate = tokenExpiryDate();
   await createVerificationToken(user.id, token, expirationDate);
   await sendVerificationEmail(user.email, token);
 

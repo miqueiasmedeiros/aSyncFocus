@@ -1,13 +1,10 @@
+import type { User } from '@prisma/client';
 import { notFound } from '../utils/errors.js';
 import { updateUserProfile, findUserById } from '../repositories/user.repository.js';
 import { hashPassword } from '../utils/password.js';
 import { prisma } from '../config/prisma.js';
 
-export async function getProfile(userId: number) {
-  const user = await findUserById(userId);
-  if (!user) {
-    throw notFound('User not found');
-  }
+function mapUserProfile(user: User) {
   return {
     id: user.id,
     name: user.name,
@@ -18,21 +15,18 @@ export async function getProfile(userId: number) {
   };
 }
 
+export async function getProfile(userId: number) {
+  const user = await findUserById(userId);
+  if (!user) throw notFound('User not found');
+  return mapUserProfile(user);
+}
+
 export async function updateProfile(userId: number, payload: { name: string; avatarUrl?: string | null }) {
   const user = await findUserById(userId);
-  if (!user) {
-    throw notFound('User not found');
-  }
+  if (!user) throw notFound('User not found');
 
   const updated = await updateUserProfile(userId, payload);
-  return {
-    id: updated.id,
-    name: updated.name,
-    email: updated.email,
-    avatarUrl: updated.avatarUrl ?? null,
-    role: updated.role,
-    mustChangePassword: updated.mustChangePassword
-  };
+  return mapUserProfile(updated);
 }
 
 export async function changePassword(userId: number, newPassword: string) {
@@ -41,12 +35,5 @@ export async function changePassword(userId: number, newPassword: string) {
     where: { id: userId },
     data: { password: hash, mustChangePassword: false }
   });
-  return {
-    id: updated.id,
-    name: updated.name,
-    email: updated.email,
-    avatarUrl: updated.avatarUrl ?? null,
-    role: updated.role,
-    mustChangePassword: updated.mustChangePassword
-  };
+  return mapUserProfile(updated);
 }

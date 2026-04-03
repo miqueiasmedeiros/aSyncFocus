@@ -19,7 +19,7 @@ export async function list(req: Request, res: Response, next: NextFunction) {
 
 export async function create(req: Request, res: Response, next: NextFunction) {
   try {
-    const userId = req.user?.userId ?? 0;
+    const userId = req.user!.userId;
     const post = await createNewPost(userId, req.body);
     res.status(201).json(post);
   } catch (error) {
@@ -29,7 +29,7 @@ export async function create(req: Request, res: Response, next: NextFunction) {
 
 export async function update(req: Request, res: Response, next: NextFunction) {
   try {
-    const userId = req.user?.userId ?? 0;
+    const userId = req.user!.userId;
     const postId = Number(req.params.id);
     const post = await updateExistingPost(userId, postId, req.body);
     res.json(post);
@@ -40,7 +40,7 @@ export async function update(req: Request, res: Response, next: NextFunction) {
 
 export async function remove(req: Request, res: Response, next: NextFunction) {
   try {
-    const userId = req.user?.userId ?? 0;
+    const userId = req.user!.userId;
     const postId = Number(req.params.id);
     const result = await deleteExistingPost(userId, postId);
     res.json(result);

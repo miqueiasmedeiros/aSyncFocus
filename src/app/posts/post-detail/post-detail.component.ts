@@ -94,8 +94,8 @@ export class PostDetailComponent implements OnInit {
     const isActive = this.activeReactions.has(type);
     const reactions = { ...this.post.reactions };
     const delta = isActive ? -1 : 1;
-    const key = type.toLowerCase() as keyof typeof reactions;
-    (reactions as any)[key] = Math.max(0, ((reactions as any)[key] ?? 0) + delta);
+
+    this.applyDelta(reactions, type, delta);
 
     if (isActive) {
       this.activeReactions.delete(type);
@@ -110,8 +110,8 @@ export class PostDetailComponent implements OnInit {
 
     request$.subscribe({
       error: () => {
-        // rollback
-        (reactions as any)[key] = Math.max(0, ((reactions as any)[key] ?? 0) - delta);
+        // Rollback: reverte a atualização otimista em caso de erro da API
+        this.applyDelta(reactions, type, -delta);
         if (isActive) {
           this.activeReactions.add(type);
         } else {
@@ -120,5 +120,12 @@ export class PostDetailComponent implements OnInit {
         if (this.post) this.post = { ...this.post, reactions };
       }
     });
+  }
+
+  private applyDelta(reactions: Post['reactions'], type: ReactionType, delta: number): void {
+    if (type === 'LIKE') reactions.like = Math.max(0, reactions.like + delta);
+    if (type === 'LOVE') reactions.love = Math.max(0, reactions.love + delta);
+    if (type === 'WOW')  reactions.wow  = Math.max(0, reactions.wow  + delta);
+    if (type === 'HAHA') reactions.haha = Math.max(0, reactions.haha + delta);
   }
 }

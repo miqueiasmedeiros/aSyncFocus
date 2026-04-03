@@ -20,6 +20,8 @@ export class PostCardComponent implements OnChanges {
 
   activeReactions = new Set<ReactionType>();
 
+  private static readonly EXCERPT_LENGTH = 260;
+
   constructor(
     private postService: PostService,
     private reactionService: ReactionService,
@@ -53,10 +55,9 @@ export class PostCardComponent implements OnChanges {
 
   getExcerpt(): string {
     const body = this.post.content?.trim() || '';
-    if (!body) {
-      return '';
-    }
-    return body.length > 260 ? `${body.slice(0, 260)}...` : body;
+    if (!body) return '';
+    const { EXCERPT_LENGTH } = PostCardComponent;
+    return body.length > EXCERPT_LENGTH ? `${body.slice(0, EXCERPT_LENGTH)}...` : body;
   }
 
   getTopics(): string[] {
