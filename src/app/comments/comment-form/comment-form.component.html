@@ -1,0 +1,9 @@
+<form class="comment-form" [formGroup]="form" (ngSubmit)="submit()">
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Add a comment</mat-label>
+    <input matInput type="text" formControlName="content" />
+  </mat-form-field>
+  <button mat-stroked-button color="primary" [disabled]="submitting">
+    {{ submitting ? 'Sending...' : 'Comment' }}
+  </button>
+</form>

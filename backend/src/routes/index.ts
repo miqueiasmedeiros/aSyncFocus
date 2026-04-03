@@ -1,0 +1,18 @@
+import { Router } from 'express';
+import { authRouter } from './auth.routes.js';
+import { userRouter } from './user.routes.js';
+import { postRouter } from './post.routes.js';
+import { commentRouter } from './comment.routes.js';
+import { reactionRouter } from './reaction.routes.js';
+import { uploadRouter } from './upload.routes.js';
+import { adminRouter } from './admin.routes.js';
+
+export const apiRouter = Router();
+
+apiRouter.use('/auth', authRouter);
+apiRouter.use('/users', userRouter);
+apiRouter.use('/posts', postRouter);
+apiRouter.use('/comments', commentRouter);
+apiRouter.use('/reactions', reactionRouter);
+apiRouter.use('/uploads', uploadRouter);
+apiRouter.use('/admin', adminRouter);

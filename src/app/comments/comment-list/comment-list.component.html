@@ -1,0 +1,56 @@
+<div class="comments">
+  <div *ngIf="loading" class="text-muted">Carregando comentarios...</div>
+
+  <div *ngIf="comments.length > 0" class="comment-list">
+    <div *ngFor="let comment of comments" class="comment-item">
+
+      <!-- Modo visualização -->
+      <ng-container *ngIf="editingId !== comment.id">
+        <div class="comment-header">
+          <strong class="comment-author">{{ comment.author.name }}</strong>
+          <span class="comment-date text-muted">{{ comment.createdAt | date: 'short' }}</span>
+          <div class="comment-actions" *ngIf="isOwner(comment)">
+            <button mat-icon-button class="action-btn" (click)="startEdit(comment)" matTooltip="Editar">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              class="action-btn action-btn--delete"
+              (click)="deleteComment(comment)"
+              [disabled]="deletingId === comment.id"
+              matTooltip="Excluir"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+        <p class="comment-content">{{ comment.content }}</p>
+      </ng-container>
+
+      <!-- Modo edição -->
+      <ng-container *ngIf="editingId === comment.id">
+        <textarea
+          class="edit-textarea"
+          [formControl]="editControl"
+          rows="3"
+        ></textarea>
+        <div class="edit-actions">
+          <button mat-stroked-button (click)="cancelEdit()">Cancelar</button>
+          <button mat-flat-button color="primary" [disabled]="editControl.invalid || savingEdit" (click)="saveEdit(comment)">
+            {{ savingEdit ? 'Salvando...' : 'Salvar' }}
+          </button>
+        </div>
+      </ng-container>
+
+    </div>
+  </div>
+
+  <div *ngIf="!loading && comments.length === 0" class="empty-state text-muted">
+    Nenhum comentario ainda. Seja o primeiro a comentar!
+  </div>
+
+  <app-comment-form
+    [postId]="postId"
+    (commentAdded)="handleCommentAdded($event)"
+  ></app-comment-form>
+</div>

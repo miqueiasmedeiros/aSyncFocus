@@ -1,0 +1,58 @@
+<div class="detail-page">
+  <div *ngIf="loading" class="text-muted">Carregando artigo...</div>
+
+  <mat-card *ngIf="post" class="detail-card">
+    <div class="detail-header">
+      <div class="avatar" *ngIf="!post.author.avatarUrl">{{ post.author.name.slice(0, 2) }}</div>
+      <img
+        *ngIf="post.author.avatarUrl"
+        [src]="post.author.avatarUrl"
+        alt="Avatar"
+        class="avatar-img"
+      />
+      <div class="detail-meta">
+        <h1 class="detail-title">{{ getTitle(post) }}</h1>
+        <div class="meta-line text-muted">
+          <span>Por {{ post.author.name }}</span>
+          <span>em {{ post.createdAt | date: 'dd/MM/yyyy' }}</span>
+        </div>
+        <div class="meta-line" *ngIf="getPrimaryTopic(post)">
+          <span class="topic-pill">{{ getPrimaryTopic(post) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-body">
+      <div *ngIf="post.imageUrl" class="detail-image-wrapper">
+        <img [src]="post.imageUrl" alt="Imagem do post" class="detail-image" />
+      </div>
+
+      <div class="detail-content" [innerHTML]="post.content | markdown"></div>
+
+      <div class="detail-reactions">
+        <button
+          *ngFor="let r of reactionList"
+          class="reaction-btn"
+          [class.active]="activeReactions.has(r.type)"
+          (click)="react(r.type)"
+          [disabled]="!isLoggedIn()"
+          [matTooltip]="!isLoggedIn() ? 'Faça login para reagir' : r.label"
+        >
+          <span class="reaction-emoji">{{ r.emoji }}</span>
+          <span class="reaction-count">{{ reactionCount(r.type) }}</span>
+        </button>
+      </div>
+
+      <div class="detail-links">
+        <span>{{ getTotalReactions(post) }} reacoes, {{ commentsLabel(post) }}</span>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <section class="detail-comments">
+        <div class="comments-title">Comentarios ({{ post.commentsCount || 0 }})</div>
+        <app-comment-list [postId]="post.id"></app-comment-list>
+      </section>
+    </div>
+  </mat-card>
+</div>

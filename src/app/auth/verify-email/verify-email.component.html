@@ -1,0 +1,79 @@
+<div class="auth-container">
+  <mat-card class="auth-card card-elevated">
+
+    <!-- Verificando (automático via link) -->
+    <ng-container *ngIf="state === 'verifying'">
+      <div class="verify-state">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Verificando seu e-mail...</p>
+      </div>
+    </ng-container>
+
+    <!-- Sucesso -->
+    <ng-container *ngIf="state === 'success'">
+      <div class="verify-state success">
+        <mat-icon>check_circle</mat-icon>
+        <h2>E-mail verificado!</h2>
+        <p class="text-muted">Redirecionando para o login...</p>
+      </div>
+    </ng-container>
+
+    <!-- Erro -->
+    <ng-container *ngIf="state === 'error'">
+      <div class="verify-state error">
+        <mat-icon>error_outline</mat-icon>
+        <h2>Não foi possível verificar</h2>
+        <p class="text-muted">{{ errorMessage }}</p>
+      </div>
+      <mat-divider class="divider"></mat-divider>
+      <p class="resend-label">Reenviar e-mail de verificação:</p>
+      <ng-container *ngTemplateOutlet="resendBlock"></ng-container>
+    </ng-container>
+
+    <!-- Aguardando (sem token na URL) -->
+    <ng-container *ngIf="state === 'pending'">
+      <h2 class="section-title">Verifique seu e-mail</h2>
+      <p class="text-muted">
+        Enviamos um link de verificação para o seu e-mail. Clique no link ou cole o token abaixo.
+      </p>
+
+      <form [formGroup]="tokenForm" (ngSubmit)="submit()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Token de verificação</mat-label>
+          <input matInput formControlName="token" />
+        </mat-form-field>
+
+        <button mat-flat-button color="primary" class="full-width" type="submit"
+          [disabled]="tokenForm.invalid">
+          Verificar
+        </button>
+      </form>
+
+      <mat-divider class="divider"></mat-divider>
+      <p class="resend-label">Não recebeu o e-mail?</p>
+      <ng-container *ngTemplateOutlet="resendBlock"></ng-container>
+    </ng-container>
+
+    <div class="auth-links">
+      <a routerLink="/login">Voltar ao login</a>
+    </div>
+  </mat-card>
+</div>
+
+<ng-template #resendBlock>
+  <ng-container *ngIf="!resendDone">
+    <form [formGroup]="resendForm" (ngSubmit)="resend()" class="resend-form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Seu e-mail</mat-label>
+        <input matInput type="email" formControlName="email" />
+      </mat-form-field>
+      <button mat-stroked-button type="submit" [disabled]="resendForm.invalid || resending">
+        <mat-spinner *ngIf="resending" diameter="16"></mat-spinner>
+        Reenviar link
+      </button>
+    </form>
+  </ng-container>
+  <p *ngIf="resendDone" class="text-muted resend-done">
+    <mat-icon>mail</mat-icon> Se o e-mail existir, um novo link foi enviado.
+  </p>
+</ng-template>

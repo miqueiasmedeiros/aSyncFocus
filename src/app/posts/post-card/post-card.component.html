@@ -1,0 +1,43 @@
+<div class="post-card">
+  <div class="post-header">
+    <div class="avatar" *ngIf="!post.author.avatarUrl">
+      {{ post.author.name.slice(0, 2) }}
+    </div>
+    <img
+      *ngIf="post.author.avatarUrl"
+      [src]="post.author.avatarUrl"
+      alt="Avatar"
+      class="avatar-img"
+    />
+    <div class="post-meta">
+      <a class="post-title" [routerLink]="['/posts', post.id]">{{ getTitle() }}</a>
+      <div class="post-subtitle text-muted">Por {{ post.author.name }} em {{ post.createdAt | date: 'dd MMM yyyy' }}</div>
+      <div class="post-topics text-muted" *ngIf="getTopics().length > 0">
+        {{ getTopicsLine() }}
+      </div>
+    </div>
+    <div class="actions" *ngIf="canEdit()">
+      <button mat-button color="primary" (click)="editPost()">Editar</button>
+      <button mat-button color="warn" (click)="deletePost()">Excluir</button>
+    </div>
+  </div>
+
+  <div class="post-body">
+    <div class="post-content" [innerHTML]="getExcerpt() | markdown"></div>
+
+    <div *ngIf="post.imageUrl" class="post-image-wrapper">
+      <img [src]="post.imageUrl" alt="Imagem do post" class="post-image" />
+    </div>
+
+    <div class="reaction-row">
+      <button mat-button class="reaction-btn" (click)="react('LIKE')">👍 {{ post.reactions?.like || 0 }}</button>
+      <button mat-button class="reaction-btn" (click)="react('LOVE')">❤️ {{ post.reactions?.love || 0 }}</button>
+      <button mat-button class="reaction-btn" (click)="react('WOW')">🚀 {{ post.reactions?.wow || 0 }}</button>
+      <button mat-button class="reaction-btn" (click)="react('HAHA')">👏 {{ post.reactions?.haha || 0 }}</button>
+    </div>
+
+    <div class="comment-row">
+      <a [routerLink]="['/posts', post.id]">{{ commentsLabel() }}</a>
+    </div>
+  </div>
+</div>

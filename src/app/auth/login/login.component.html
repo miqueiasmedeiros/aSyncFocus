@@ -1,0 +1,32 @@
+<div class="auth-container">
+  <mat-card class="auth-card card-elevated">
+    <h2 class="section-title">Bem-vindo</h2>
+    <p class="text-muted">Faça login na sua conta aSync.</p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Senha</mat-label>
+        <input matInput type="password" formControlName="password" />
+      </mat-form-field>
+
+      <button mat-flat-button color="primary" class="full-width" [disabled]="loading">
+        {{ loading ? 'Entrando...' : 'Entrar' }}
+      </button>
+    </form>
+
+    <div *ngIf="unverifiedEmail" class="unverified-banner">
+      <mat-icon>mail_outline</mat-icon>
+      <span>E-mail não verificado. <a routerLink="/verify-email">Verificar agora</a></span>
+    </div>
+
+    <div class="auth-links">
+      <a routerLink="/register">Criar conta</a>
+      <a routerLink="/verify-email">Verificar e-mail</a>
+    </div>
+  </mat-card>
+</div>

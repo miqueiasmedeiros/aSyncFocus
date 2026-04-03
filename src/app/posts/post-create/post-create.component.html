@@ -1,0 +1,10 @@
+<div class="post-page">
+  <mat-card class="post-card">
+    <app-post-form
+      [title]="'Novo Post'"
+      [submitLabel]="'Publicar post'"
+      [submitting]="submitting"
+      (save)="handleSave($event)"
+    ></app-post-form>
+  </mat-card>
+</div>

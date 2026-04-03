@@ -1,0 +1,183 @@
+<div class="admin-page">
+  <div class="admin-header">
+    <div class="admin-title">
+      <mat-icon>admin_panel_settings</mat-icon>
+      <h1>Painel Administrativo</h1>
+    </div>
+    <p class="admin-subtitle">Gerenciamento de usuários e posts do sistema</p>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tab-bar">
+    <button class="tab-btn" [class.active]="activeTab === 'users'" (click)="activeTab = 'users'">
+      <mat-icon>people</mat-icon> Usuários ({{ users.length }})
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'posts'" (click)="activeTab = 'posts'">
+      <mat-icon>article</mat-icon> Posts ({{ posts.length }})
+    </button>
+  </div>
+
+  <!-- USERS TAB -->
+  <div *ngIf="activeTab === 'users'" class="tab-content">
+    <div class="section-toolbar">
+      <h2>Usuários</h2>
+      <button mat-raised-button color="primary" (click)="showCreateForm = !showCreateForm">
+        <mat-icon>person_add</mat-icon> Novo usuário
+      </button>
+    </div>
+
+    <!-- Create user form -->
+    <div *ngIf="showCreateForm" class="create-form-card">
+      <h3>Criar novo usuário</h3>
+      <form [formGroup]="createForm" (ngSubmit)="submitCreateUser()" class="create-form">
+        <mat-form-field appearance="outline">
+          <mat-label>Nome</mat-label>
+          <input matInput formControlName="name" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>E-mail</mat-label>
+          <input matInput type="email" formControlName="email" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Senha</mat-label>
+          <input matInput type="password" formControlName="password" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Perfil</mat-label>
+          <mat-select formControlName="role">
+            <mat-option value="USER">Usuário</mat-option>
+            <mat-option value="ADMIN">Administrador</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div class="form-actions">
+          <button mat-button type="button" (click)="showCreateForm = false">Cancelar</button>
+          <button mat-raised-button color="primary" type="submit" [disabled]="createForm.invalid || creating">
+            <mat-spinner *ngIf="creating" diameter="18"></mat-spinner>
+            Criar
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div *ngIf="loadingUsers" class="loading">Carregando usuários...</div>
+
+    <div class="table-wrapper" *ngIf="!loadingUsers">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>E-mail</th>
+            <th>Perfil</th>
+            <th>Criado em</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngFor="let user of users">
+            <!-- Normal row -->
+            <tr *ngIf="editingUserId !== user.id">
+              <td class="muted">{{ user.id }}</td>
+              <td class="user-cell">
+                <img *ngIf="user.avatarUrl" [src]="user.avatarUrl" class="mini-avatar" />
+                <span *ngIf="!user.avatarUrl" class="mini-avatar-placeholder">{{ user.name.slice(0,2) }}</span>
+                {{ user.name }}
+                <span *ngIf="user.mustChangePassword" class="pw-badge" matTooltip="Aguardando troca de senha">🔑</span>
+              </td>
+              <td>{{ user.email }}</td>
+              <td>
+                <span class="role-badge" [class.admin]="user.role === 'ADMIN'">{{ user.role }}</span>
+              </td>
+              <td class="muted">{{ user.createdAt | date:'dd/MM/yyyy' }}</td>
+              <td class="actions-cell">
+                <button mat-icon-button (click)="startEdit(user)" matTooltip="Editar usuário">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="deleteUser(user)" matTooltip="Excluir usuário">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </tr>
+
+            <!-- Edit row -->
+            <tr *ngIf="editingUserId === user.id" class="edit-row" [formGroup]="editForm">
+              <td class="muted">{{ user.id }}</td>
+              <td>
+                <mat-form-field appearance="outline" class="inline-field">
+                  <input matInput formControlName="name" placeholder="Nome" />
+                </mat-form-field>
+              </td>
+              <td>
+                <mat-form-field appearance="outline" class="inline-field">
+                  <input matInput formControlName="email" placeholder="E-mail" />
+                </mat-form-field>
+              </td>
+              <td>
+                <mat-form-field appearance="outline" class="inline-field inline-select">
+                  <mat-select formControlName="role">
+                    <mat-option value="USER">USER</mat-option>
+                    <mat-option value="ADMIN">ADMIN</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </td>
+              <td></td>
+              <td class="actions-cell">
+                <button mat-icon-button color="primary" (click)="submitEdit()" [disabled]="editForm.invalid || saving" matTooltip="Salvar">
+                  <mat-icon>check</mat-icon>
+                </button>
+                <button mat-icon-button (click)="cancelEdit()" matTooltip="Cancelar">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- POSTS TAB -->
+  <div *ngIf="activeTab === 'posts'" class="tab-content">
+    <div class="section-toolbar">
+      <h2>Posts</h2>
+      <button mat-stroked-button (click)="loadPosts()">
+        <mat-icon>refresh</mat-icon> Atualizar
+      </button>
+    </div>
+
+    <div *ngIf="loadingPosts" class="loading">Carregando posts...</div>
+
+    <div class="table-wrapper" *ngIf="!loadingPosts">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Título</th>
+            <th>Autor</th>
+            <th>Tópicos</th>
+            <th>Data</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let post of posts">
+            <td class="muted">{{ post.id }}</td>
+            <td class="post-subject">{{ post.subject }}</td>
+            <td>{{ post.user.name }}</td>
+            <td class="muted">{{ getTopics(post) || '—' }}</td>
+            <td class="muted">{{ post.createdAt | date:'dd/MM/yyyy' }}</td>
+            <td>
+              <button mat-icon-button color="warn" (click)="deletePost(post)" matTooltip="Excluir post">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

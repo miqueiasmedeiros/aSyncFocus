@@ -1,0 +1,31 @@
+<div class="home-layout">
+  <section class="feed">
+    <div class="feed-header">
+      <button mat-icon-button (click)="loadFeed()" matTooltip="Atualizar feed">
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </div>
+
+    <div *ngIf="view === 'meus-topicos' && !hasFollowedTopics" class="empty-hint">
+      <mat-icon>info</mat-icon>
+      Você ainda não configurou seus tópicos. Acesse o <a routerLink="/profile">perfil</a> para escolhê-los.
+    </div>
+
+    <div *ngIf="loading" class="text-muted">Carregando posts...</div>
+
+    <div *ngIf="!loading && filteredPosts.length === 0 && allPosts.length > 0" class="empty-hint">
+      <mat-icon>search_off</mat-icon>
+      Nenhum post encontrado para este filtro.
+    </div>
+
+    <div *ngFor="let post of filteredPosts; trackBy: trackByPostId" class="feed-item">
+      <app-post-card
+        [post]="post"
+        [currentUserId]="currentUser?.id || ''"
+        [currentUserName]="currentUser?.name || ''"
+        (postUpdated)="handlePostUpdated($event)"
+        (postDeleted)="handlePostDeleted($event)"
+      ></app-post-card>
+    </div>
+  </section>
+</div>

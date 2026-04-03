@@ -1,0 +1,81 @@
+<div class="profile-page">
+  <mat-card class="profile-card">
+    <div class="profile-header">
+      <div class="avatar-wrapper">
+        <div class="avatar" *ngIf="!avatarPreview">{{ form.get('name')?.value?.slice(0, 2) || 'U' }}</div>
+        <img *ngIf="avatarPreview" [src]="avatarPreview" alt="Foto de perfil" />
+      </div>
+      <div>
+        <h2>Editar perfil</h2>
+        <p class="text-muted">Atualize seus dados e foto para o feed interno.</p>
+      </div>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <div class="form-grid">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nome completo</mat-label>
+          <input matInput type="text" formControlName="name" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" formControlName="email" disabled />
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>URL da foto de perfil</mat-label>
+        <input
+          matInput
+          type="url"
+          formControlName="avatarUrl"
+          (input)="onAvatarUrlInput()"
+          placeholder="https://cdn.company.local/avatar/usuario.png"
+        />
+        <mat-hint>Maximo 500 caracteres. O backend nao aceita base64.</mat-hint>
+      </mat-form-field>
+
+      <div class="upload-section">
+        <label class="upload-label">Foto de perfil</label>
+        <div class="upload-controls">
+          <input type="file" id="avatarUpload" accept="image/jpeg,image/png,image/gif,image/webp" (change)="onFileSelected($event)" hidden />
+          <label for="avatarUpload" class="upload-button" [class.disabled]="uploadingAvatar">
+            <mat-spinner *ngIf="uploadingAvatar" diameter="16" style="display:inline-block;margin-right:6px"></mat-spinner>
+            {{ uploadingAvatar ? 'Enviando...' : 'Selecionar imagem do computador' }}
+          </label>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button mat-flat-button color="primary" [disabled]="loading">
+          {{ loading ? 'Salvando...' : 'Salvar alteracoes' }}
+        </button>
+      </div>
+    </form>
+
+    <mat-divider style="margin: 24px 0"></mat-divider>
+
+    <div class="topics-section">
+      <div class="topics-header">
+        <div>
+          <h3 class="topics-title">Meus tópicos</h3>
+          <p class="text-muted">Escolha os tópicos que te interessam para o filtro "Meus tópicos" no feed.</p>
+        </div>
+      </div>
+      <div class="topics-grid">
+        <mat-checkbox
+          *ngFor="let topic of allTopics"
+          [checked]="isTopicFollowed(topic)"
+          (change)="toggleTopic(topic, $event.checked)"
+        >
+          {{ topic }}
+        </mat-checkbox>
+      </div>
+      <p class="topics-saved" *ngIf="topicsSaved">
+        <mat-icon style="font-size:16px;vertical-align:middle">check_circle</mat-icon>
+        Tópicos salvos!
+      </p>
+    </div>
+  </mat-card>
+</div>

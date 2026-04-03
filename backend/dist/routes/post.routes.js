@@ -1,0 +1,11 @@
+import { Router } from 'express';
+import { create, getById, list, remove, update } from '../controllers/post.controller.js';
+import { authMiddleware } from '../middlewares/auth.js';
+import { validate } from '../middlewares/validate.js';
+import { postIdParamSchema, postPayloadSchema } from '../dtos/post.js';
+export const postRouter = Router();
+postRouter.get('/', list);
+postRouter.get('/:id', validate({ params: postIdParamSchema }), getById);
+postRouter.post('/', authMiddleware, validate({ body: postPayloadSchema }), create);
+postRouter.put('/:id', authMiddleware, validate({ params: postIdParamSchema, body: postPayloadSchema }), update);
+postRouter.delete('/:id', authMiddleware, validate({ params: postIdParamSchema }), remove);

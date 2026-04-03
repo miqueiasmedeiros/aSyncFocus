@@ -1,0 +1,32 @@
+<div class="auth-container">
+  <mat-card class="auth-card card-elevated">
+    <h2 class="section-title">Cadastro aSync</h2>
+    <p class="text-muted">Crie seu perfil para acessar a plataforma aSync.</p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nome</mat-label>
+        <input matInput type="text" formControlName="name" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Senha</mat-label>
+        <input matInput type="password" formControlName="password" />
+      </mat-form-field>
+
+      <button mat-flat-button color="primary" class="full-width" [disabled]="loading">
+        {{ loading ? 'Criando conta...' : 'Cadastrar' }}
+      </button>
+    </form>
+
+    <div class="auth-links">
+      <a routerLink="/login">Já possui uma conta?</a>
+      <a routerLink="/verify-email">Verificar e-mail</a>
+    </div>
+  </mat-card>
+</div>

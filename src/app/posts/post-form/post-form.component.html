@@ -1,0 +1,117 @@
+<form class="post-form" [formGroup]="form" (ngSubmit)="submit()">
+  <div class="form-title">
+    <mat-icon>edit</mat-icon>
+    <span>{{ title }}</span>
+  </div>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Assunto</mat-label>
+    <input matInput type="text" formControlName="subject" />
+  </mat-form-field>
+
+  <div class="content-label">Conteudo</div>
+  <div class="editor-toolbar">
+    <div class="toolbar-group">
+      <button mat-stroked-button type="button" (click)="applyFormat('bold')">
+        <mat-icon>format_bold</mat-icon>
+      </button>
+      <button mat-stroked-button type="button" (click)="applyFormat('italic')">
+        <mat-icon>format_italic</mat-icon>
+      </button>
+      <button mat-stroked-button type="button" (click)="applyFormat('strike')">
+        <mat-icon>format_strikethrough</mat-icon>
+      </button>
+      <button mat-stroked-button type="button" (click)="applyFormat('link')">
+        <mat-icon>link</mat-icon>
+      </button>
+    </div>
+    <div class="toolbar-group">
+      <button mat-stroked-button type="button" (click)="applyFormat('heading')">
+        <mat-icon>format_size</mat-icon>
+      </button>
+      <button mat-stroked-button type="button" (click)="applyFormat('quote')">
+        <mat-icon>format_quote</mat-icon>
+      </button>
+      <button mat-stroked-button type="button" (click)="applyFormat('code')">
+        <mat-icon>code</mat-icon>
+      </button>
+      <button mat-stroked-button type="button" (click)="applyFormat('bulleted')">
+        <mat-icon>format_list_bulleted</mat-icon>
+      </button>
+      <button mat-stroked-button type="button" (click)="applyFormat('numbered')">
+        <mat-icon>format_list_numbered</mat-icon>
+      </button>
+      <button mat-stroked-button type="button" (click)="applyFormat('heading')">
+        <mat-icon>format_align_left</mat-icon>
+      </button>
+    </div>
+    <div class="toolbar-group">
+      <button mat-stroked-button type="button" (click)="applyFormat('attach')">
+        <mat-icon>attach_file</mat-icon>
+      </button>
+    </div>
+    <div class="toolbar-group">
+      <button mat-stroked-button type="button" (click)="applyFormat('undo')">
+        <mat-icon>undo</mat-icon>
+      </button>
+      <button mat-stroked-button type="button" (click)="applyFormat('redo')">
+        <mat-icon>redo</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <textarea
+      #contentInput
+      matInput
+      rows="6"
+      formControlName="content"
+      placeholder="Escreva o conteudo do post..."
+    ></textarea>
+  </mat-form-field>
+
+  <input #attachmentInput type="file" hidden (change)="onAttachmentSelected($event)" />
+  <input #imageInput type="file" hidden accept="image/jpeg,image/png,image/gif,image/webp" (change)="onImageSelected($event)" />
+
+  <div class="image-upload-section">
+    <div class="image-upload-label">Imagem do post</div>
+
+    <div *ngIf="imagePreview" class="image-preview-wrapper">
+      <img [src]="imagePreview" alt="Preview" class="image-preview" />
+      <button mat-icon-button class="image-remove-btn" type="button" (click)="removeImage()" matTooltip="Remover imagem">
+        <mat-icon>close</mat-icon>
+      </button>
+      <div *ngIf="uploadingImage" class="image-uploading-overlay">
+        <mat-spinner diameter="32"></mat-spinner>
+      </div>
+    </div>
+
+    <button *ngIf="!imagePreview" mat-stroked-button type="button" (click)="openImagePicker()" [disabled]="uploadingImage">
+      <mat-icon>add_photo_alternate</mat-icon>
+      Adicionar imagem
+    </button>
+
+    <div *ngIf="imageError" class="image-error">{{ imageError }}</div>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <div class="topics">
+    <div class="topics-title">Topicos</div>
+    <div class="topics-grid">
+      <mat-checkbox
+        *ngFor="let topic of topics"
+        [checked]="isTopicSelected(topic)"
+        (change)="toggleTopic(topic, $event.checked)"
+      >
+        {{ topic }}
+      </mat-checkbox>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <button mat-flat-button color="primary" [disabled]="submitting">
+      {{ submitting ? 'Salvando...' : submitLabel }}
+    </button>
+  </div>
+</form>

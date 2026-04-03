@@ -1,0 +1,61 @@
+<mat-toolbar class="app-toolbar">
+  <div class="toolbar-left">
+    <a class="brand" routerLink="/home">aSync</a>
+
+    <button mat-stroked-button [matMenuTriggerFor]="filterMenu" class="filter-btn" *ngIf="authService.isLoggedIn()">
+      {{ viewLabels[selectedView] }}
+      <mat-icon>arrow_drop_down</mat-icon>
+    </button>
+
+    <mat-menu #filterMenu="matMenu">
+      <button mat-menu-item (click)="setView('todos')">
+        <mat-icon>campaign</mat-icon>
+        <span>Todos os posts</span>
+      </button>
+      <button mat-menu-item (click)="setView('meus-topicos')">
+        <mat-icon>person</mat-icon>
+        <span>Meus tópicos</span>
+      </button>
+      <button mat-menu-item (click)="setView('nao-lidos')">
+        <mat-icon>mark_email_unread</mat-icon>
+        <span>Não lidos</span>
+      </button>
+    </mat-menu>
+
+    <div class="toolbar-search-wrapper" *ngIf="authService.isLoggedIn()">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input
+        class="toolbar-search-input"
+        type="text"
+        placeholder="Buscar posts..."
+        [(ngModel)]="searchQuery"
+        (keydown.enter)="search()"
+        (input)="search()"
+      />
+    </div>
+  </div>
+
+  <span class="spacer"></span>
+
+  <div class="toolbar-right" *ngIf="user$ | async as user; else loggedOut">
+    <a class="user-chip" [routerLink]="['/profile']">
+      <div class="avatar" *ngIf="!user.avatarUrl">{{ getInitials(user.name) }}</div>
+      <img *ngIf="user.avatarUrl" [src]="user.avatarUrl" alt="Avatar" class="avatar-img" />
+      <span>{{ user.name }}</span>
+    </a>
+    <button mat-stroked-button color="primary" routerLink="/posts/new">+Post</button>
+    <button *ngIf="authService.isAdmin()" mat-stroked-button routerLink="/admin" matTooltip="Painel Admin">
+      <mat-icon>admin_panel_settings</mat-icon>
+    </button>
+    <button mat-stroked-button color="warn" (click)="logout()">Sair</button>
+  </div>
+
+  <ng-template #loggedOut>
+    <button mat-button routerLink="/login">Login</button>
+    <button mat-flat-button color="accent" routerLink="/register">Register</button>
+  </ng-template>
+</mat-toolbar>
+
+<main class="app-shell">
+  <router-outlet></router-outlet>
+</main>

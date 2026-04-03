@@ -1,0 +1,16 @@
+.comment-form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.full-width {
+  width: 100%;
+}
+
+@media (max-width: 600px) {
+  .comment-form {
+    grid-template-columns: 1fr;
+  }
+}

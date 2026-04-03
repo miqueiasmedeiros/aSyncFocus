@@ -1,0 +1,15 @@
+<div class="post-page">
+  <mat-card class="post-card" *ngIf="!loading; else loadingTpl">
+    <app-post-form
+      [title]="'Editar Post'"
+      [submitLabel]="'Salvar alteracoes'"
+      [submitting]="submitting"
+      [initialValue]="initialValue"
+      (save)="handleSave($event)"
+    ></app-post-form>
+  </mat-card>
+
+  <ng-template #loadingTpl>
+    <div class="loading">Carregando post...</div>
+  </ng-template>
+</div>
