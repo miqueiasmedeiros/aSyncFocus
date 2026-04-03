@@ -24,6 +24,12 @@ API REST para a rede social corporativa **aSync**, construída com Node.js, Expr
 
 ---
 
+## Fluxograma aSync
+
+<p align="center">
+  <img src="Fluxograma.png" width="700">
+</p>
+
 ## Pré-requisitos
 
 - Node.js 20+
