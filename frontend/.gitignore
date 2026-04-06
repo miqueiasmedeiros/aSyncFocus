@@ -1,0 +1,13 @@
+.angular/
+dist/
+node_modules/
+coverage/
+
+.DS_Store
+Thumbs.db
+
+.vscode/
+.idea/
+
+*.log
+npm-debug.log*
