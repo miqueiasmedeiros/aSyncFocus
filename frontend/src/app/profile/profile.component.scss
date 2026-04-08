@@ -45,8 +45,21 @@
   gap: 16px;
 }
 
+.profile-url-field {
+  margin-bottom: 4px;
+}
+
+.field-help {
+  margin: 0 0 24px;
+  max-width: 64ch;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--muted);
+  opacity: 0.88;
+}
+
 .upload-section {
-  margin-top: 16px;
+  margin-top: 0;
 }
 
 .upload-label {
@@ -72,6 +85,18 @@
 
 .actions {
   margin-top: 20px;
+}
+
+.save-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-width: 170px;
+}
+
+.button-spinner {
+  flex: 0 0 auto;
 }
 
 .full-width {

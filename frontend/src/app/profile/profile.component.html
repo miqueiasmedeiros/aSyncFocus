@@ -24,32 +24,31 @@
         </mat-form-field>
       </div>
 
-      <mat-form-field appearance="outline" class="full-width">
+      <mat-form-field appearance="outline" class="full-width profile-url-field">
         <mat-label>URL da foto de perfil</mat-label>
-        <input
-          matInput
-          type="url"
-          formControlName="avatarUrl"
-          (input)="onAvatarUrlInput()"
-          placeholder="https://cdn.company.local/avatar/usuario.png"
-        />
-        <mat-hint>Maximo 500 caracteres. O backend nao aceita base64.</mat-hint>
+        <input matInput type="url" formControlName="avatarUrl" (input)="onAvatarUrlInput()" />
       </mat-form-field>
+      <p class="field-help">
+        Ex.: https://cdn.company.local/avatar/usuario.png. Use uma URL pública. Base64 não é suportado.
+      </p>
 
       <div class="upload-section">
         <label class="upload-label">Foto de perfil</label>
         <div class="upload-controls">
-          <input type="file" id="avatarUpload" accept="image/jpeg,image/png,image/gif,image/webp" (change)="onFileSelected($event)" hidden />
+          <input type="file" id="avatarUpload" accept="image/jpeg,image/png,image/gif,image/webp"
+            (change)="onFileSelected($event)" hidden />
           <label for="avatarUpload" class="upload-button" [class.disabled]="uploadingAvatar">
-            <mat-spinner *ngIf="uploadingAvatar" diameter="16" style="display:inline-block;margin-right:6px"></mat-spinner>
+            <mat-spinner *ngIf="uploadingAvatar" diameter="16"
+              style="display:inline-block;margin-right:6px"></mat-spinner>
             {{ uploadingAvatar ? 'Enviando...' : 'Selecionar imagem do computador' }}
           </label>
         </div>
       </div>
 
       <div class="actions">
-        <button mat-flat-button color="primary" [disabled]="loading">
-          {{ loading ? 'Salvando...' : 'Salvar alteracoes' }}
+        <button mat-flat-button color="primary" type="submit" class="save-button" [disabled]="loading">
+          <mat-spinner *ngIf="loading" diameter="18" class="button-spinner"></mat-spinner>
+          <span>{{ loading ? 'Salvando...' : 'Salvar alterações' }}</span>
         </button>
       </div>
     </form>
@@ -64,11 +63,8 @@
         </div>
       </div>
       <div class="topics-grid">
-        <mat-checkbox
-          *ngFor="let topic of allTopics"
-          [checked]="isTopicFollowed(topic)"
-          (change)="toggleTopic(topic, $event.checked)"
-        >
+        <mat-checkbox *ngFor="let topic of allTopics" [checked]="isTopicFollowed(topic)"
+          (change)="toggleTopic(topic, $event.checked)">
           {{ topic }}
         </mat-checkbox>
       </div>
