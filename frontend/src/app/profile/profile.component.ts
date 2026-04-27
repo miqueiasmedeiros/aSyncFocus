@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { UploadService } from '../services/upload.service';
 import { UserPreferencesService, ALL_TOPICS } from '../services/user-preferences.service';
@@ -29,7 +30,8 @@ export class ProfileComponent implements OnInit {
     private authService: AuthService,
     private uploadService: UploadService,
     private userPrefs: UserPreferencesService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -94,6 +96,7 @@ export class ProfileComponent implements OnInit {
     }
 
     this.loading = true;
+    const savingSnackBar = this.snackBar.open('Salvando alterações do perfil...', undefined);
     const value = this.form.getRawValue();
     this.authService.updateProfile({
       name: value.name,
@@ -101,10 +104,13 @@ export class ProfileComponent implements OnInit {
     }).subscribe({
       next: () => {
         this.loading = false;
+        savingSnackBar.dismiss();
         this.snackBar.open('Perfil atualizado com sucesso.', 'Fechar', { duration: 2500 });
+        this.router.navigate(['/home']);
       },
       error: () => {
         this.loading = false;
+        savingSnackBar.dismiss();
         this.snackBar.open('Falha ao atualizar o perfil.', 'Fechar', { duration: 2500 });
       }
     });

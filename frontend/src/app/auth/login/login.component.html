@@ -3,18 +3,33 @@
     <h2 class="section-title">Bem-vindo</h2>
     <p class="text-muted">Faça login na sua conta aSync.</p>
 
-    <form [formGroup]="form" (ngSubmit)="submit()">
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Email</mat-label>
         <input matInput type="email" formControlName="email" />
+        <mat-error *ngIf="showFieldError('email')">
+          {{ emailControl.hasError('required') ? 'Informe seu e-mail.' : 'Informe um e-mail válido.' }}
+        </mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Senha</mat-label>
         <input matInput type="password" formControlName="password" />
+        <mat-error *ngIf="showFieldError('password')">
+          {{
+            passwordControl.hasError('required')
+              ? 'Informe sua senha.'
+              : 'A senha deve ter pelo menos 8 caracteres.'
+          }}
+        </mat-error>
       </mat-form-field>
 
-      <button mat-flat-button color="primary" class="full-width" [disabled]="loading">
+      <div *ngIf="submitted && form.invalid" class="form-error" role="alert" aria-live="polite">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ formErrorMessage }}</span>
+      </div>
+
+      <button mat-flat-button color="primary" type="submit" class="full-width" [disabled]="loading">
         {{ loading ? 'Entrando...' : 'Entrar' }}
       </button>
     </form>

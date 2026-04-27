@@ -9,8 +9,28 @@
   padding: 28px;
 }
 
+form {
+  display: flex;
+  flex-direction: column;
+}
+
 .full-width {
   width: 100%;
+}
+
+.form-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 2px 0 16px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  font-size: 14px;
+  color: #b91c1c;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; color: #dc2626; }
 }
 
 .auth-links {

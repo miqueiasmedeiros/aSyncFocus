@@ -11,6 +11,7 @@ import { AuthService } from '../../services/auth.service';
 })
 export class LoginComponent implements OnInit {
   loading = false;
+  submitted = false;
   unverifiedEmail = false;
   form = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
@@ -31,8 +32,40 @@ export class LoginComponent implements OnInit {
     }
   }
 
+  get emailControl() {
+    return this.form.controls.email;
+  }
+
+  get passwordControl() {
+    return this.form.controls.password;
+  }
+
+  showFieldError(controlName: 'email' | 'password'): boolean {
+    const control = this.form.controls[controlName];
+    return control.invalid && (control.touched || this.submitted);
+  }
+
+  get formErrorMessage(): string {
+    if (this.emailControl.hasError('required') || this.passwordControl.hasError('required')) {
+      return 'Preencha os campos obrigatórios para entrar.';
+    }
+
+    if (this.emailControl.hasError('email')) {
+      return 'Informe um e-mail válido.';
+    }
+
+    if (this.passwordControl.hasError('minlength')) {
+      return 'A senha deve ter pelo menos 8 caracteres.';
+    }
+
+    return 'Revise os dados informados e tente novamente.';
+  }
+
   submit(): void {
+    this.submitted = true;
+
     if (this.form.invalid) {
+      this.form.markAllAsTouched();
       return;
     }
 
